@@ -10,6 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='odinweb.flask',
+    namespace_packages=['odinweb'],
     version='0.1',
     description="Toolkit for building web API's using Odin and Flask.",
     long_description=long_description,
@@ -40,7 +41,7 @@ setup(
 
     keywords='odin web rest api flask',
 
-    packages=find_packages(include=('odinweb_flask',)),
+    packages=find_packages(include=('odinweb',)),
 
-    install_requires=['odin>=0.10', 'six', 'flask'],
+    install_requires=['odinweb', 'flask'],
 )
