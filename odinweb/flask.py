@@ -8,7 +8,9 @@ Flask implementation of the OdinWeb API interface.
 from __future__ import absolute_import
 
 from flask import Flask, request, make_response
-from odinweb.data_structures import ApiBase, PathNode
+
+from odinweb.api import ApiBase
+from odinweb.data_structures import PathNode
 
 
 class ApiBlueprintSetupState(object):

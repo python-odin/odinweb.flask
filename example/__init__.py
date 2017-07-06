@@ -1,21 +1,30 @@
 import odin
 
 from flask import Flask
-from odinweb.api import ResourceApi, ApiCollection
-from odinweb.data_structures import ApiRoute, PathNode
+from odinweb.api import ResourceApi, ApiVersion, detail, listing
 from odinweb.flask import ApiBlueprint
 
 app = Flask(__name__)
 
 
-class Book(odin.Resource):
-    title = odin.StringField()
-    published = odin.DateField()
-    authors = odin.TypedListField(odin.StringField())
+class User(odin.Resource):
+    id = odin.IntegerField()
+    name = odin.StringField()
 
 
-class BookApi(ResourceApi):
-    resource = Book
+class UserApi(ResourceApi):
+    resource = User
+
+    @listing
+    def get_user_list(self):
+        return [
+            User(1, "tim"),
+            User(2, "sara"),
+        ]
+
+    @detail
+    def get_user(self, resource_id):
+        return User(1, "tim")
 
 
 @app.route("/<name>/")
@@ -28,10 +37,8 @@ def sample_callback(request, **kwargs):
 
 app.register_blueprint(
     ApiBlueprint(
-        ApiCollection(
-            ApiRoute(1, ['user'], ['GET', 'POST'], sample_callback),
-            ApiRoute(1, ['user', PathNode('resource_id', 'int', [])], ['GET', 'POST'], sample_callback),
-        ),
-        # ApiVersion(BookApi)
+        ApiVersion(
+            UserApi()
+        )
     )
 )
