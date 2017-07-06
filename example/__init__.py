@@ -3,7 +3,6 @@ import odin
 from flask import Flask
 from odinweb.flask import api
 
-
 app = Flask(__name__)
 
 
@@ -17,10 +16,13 @@ class BookApi(api.ResourceApi):
     resource = Book
 
 
-@app.route("/")
-def hello():
-    return "HelloWorld!"
+@app.route("/<name>/")
+def hello(name):
+    return "HelloWorld! " + name
 
-api.Api(
-    api.ApiVersion(BookApi())
-).register(app)
+
+app.register_blueprint(
+    api.ApiBlueprint(
+        api.ApiVersion(BookApi)
+    )
+)
