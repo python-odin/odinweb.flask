@@ -16,7 +16,7 @@ class UserApi(ResourceApi):
     resource = User
 
     @listing
-    def get_user_list(self, request):
+    def get_user_list(self, request, limit, offset):
         return [
             User(1, "tim"),
             User(2, "sara"),
@@ -31,6 +31,7 @@ app.register_blueprint(
     ApiBlueprint(
         ApiVersion(
             UserApi()
-        )
+        ),
+        debug_enabled=True
     )
 )

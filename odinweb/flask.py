@@ -15,6 +15,15 @@ from odinweb.api import ApiBase
 from odinweb.data_structures import PathNode
 
 
+class RequestProxy(object):
+    def __init__(self, r):
+        self.GET = r.args
+        self.POST = r.form
+        self.headers = r.headers
+        self.method = r.method
+        self.request = r
+
+
 class ApiBlueprintSetupState(object):
     """Temporary holder object for registering a blueprint with the
     application.  An instance of this class is created by the
@@ -92,12 +101,8 @@ class ApiBlueprint(ApiBase):
 
     def _bound_callback(self, f):
         def callback(**kwargs):
-            response = make_response(f(request, **kwargs))
-
-            # Todo: Deal with response object and map back to Bottle.response
-            response.headers['content-type'] = 'text/plain'
-
-            return response
+            response = f(RequestProxy(request), **kwargs)
+            return make_response(response.body, response.status, response.headers)
         return callback
 
     def make_setup_state(self, app, options, first_registration=False):
