@@ -4,6 +4,8 @@ OdinWeb.Flask API
 
 Flask implementation of the OdinWeb API interface.
 
+The API integrates into Flask via Flasks blueprint features.
+
 """
 from __future__ import absolute_import
 
