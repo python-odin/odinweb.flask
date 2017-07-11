@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 from flask import Flask, request, make_response
 
-from odinweb.api import ApiBase
+from odinweb.api import ApiInterfaceBase
 from odinweb.data_structures import PathNode
 
 
@@ -65,7 +65,7 @@ class ApiBlueprintSetupState(object):
         self.app.add_url_rule(rule, '%s.%s' % (self.blueprint.name, endpoint), view_func, **options)
 
 
-class ApiBlueprint(ApiBase):
+class ApiBlueprint(ApiInterfaceBase):
     """
     A Flask Blueprint for an API::
 
@@ -126,5 +126,5 @@ class ApiBlueprint(ApiBase):
         self._got_registered_once = True
         state = self.make_setup_state(app, options, first_registration)
 
-        for path, methods, callback in super(ApiBlueprint, self)._build_routes():
+        for path, methods, callback in super(ApiBlueprint, self).build_routes():
             state.add_url_rule(path, path, self._bound_callback(callback), methods=methods)
