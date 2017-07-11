@@ -3,6 +3,7 @@ import odin
 from flask import Flask
 from odinweb.api import ResourceApi, ApiVersion, detail, listing
 from odinweb.flask import ApiBlueprint
+from odinweb.swagger import SwaggerSpec
 
 app = Flask(__name__)
 
@@ -30,6 +31,7 @@ class UserApi(ResourceApi):
 app.register_blueprint(
     ApiBlueprint(
         ApiVersion(
+            SwaggerSpec("Example Spec"),
             UserApi()
         ),
         debug_enabled=True
