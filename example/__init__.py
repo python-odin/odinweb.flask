@@ -1,8 +1,9 @@
 import odin
 
 from flask import Flask
-from odinweb.api import ResourceApi, ApiVersion, detail, listing
+from odinweb import api
 from odinweb.flask import ApiBlueprint
+from odinweb.swagger import SwaggerSpec
 
 app = Flask(__name__)
 
@@ -12,25 +13,34 @@ class User(odin.Resource):
     name = odin.StringField()
 
 
-class UserApi(ResourceApi):
+class UserApi(api.ResourceApi):
     resource = User
 
-    @listing
+    @api.listing
     def get_user_list(self, request, limit, offset):
         return [
             User(1, "tim"),
             User(2, "sara"),
-        ]
+        ], 2
 
-    @detail
+    @api.detail
+    @api.operation_doc(tags=['user'])
+    @api.parameter_doc('full', api.In.Query, type_=api.Type.Boolean)
+    @api.response_doc(200, 'Return requested user.')
     def get_user(self, request, resource_id):
+        """
+        Get a user object
+        """
         return User(resource_id, "tim")
 
 
 app.register_blueprint(
     ApiBlueprint(
-        ApiVersion(
-            UserApi()
+        api.ApiVersion(
+            SwaggerSpec('Flask Example API'),  # Support for Swagger!
+            api.ApiCollection(
+                UserApi(),
+            ),
         ),
         debug_enabled=True
     )
