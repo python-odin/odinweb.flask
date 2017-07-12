@@ -1,7 +1,7 @@
 import odin
 
 from flask import Flask
-from odinweb import api
+from odinweb import api, doc
 from odinweb.flask import ApiBlueprint
 from odinweb.swagger import SwaggerSpec
 
@@ -17,6 +17,7 @@ class UserApi(api.ResourceApi):
     resource = User
 
     @api.listing
+    @doc.operation(tags=['user'])
     def get_user_list(self, request, limit, offset):
         return [
             User(1, "tim"),
@@ -24,9 +25,9 @@ class UserApi(api.ResourceApi):
         ], 2
 
     @api.detail
-    @api.operation_doc(tags=['user'])
-    @api.parameter_doc('full', api.In.Query, type_=api.Type.Boolean)
-    @api.response_doc(200, 'Return requested user.')
+    @doc.operation(tags=['user'])
+    @doc.parameter('full', api.In.Query, type_=api.Type.Boolean)
+    @doc.response(200, 'Return requested user.', User)
     def get_user(self, request, resource_id):
         """
         Get a user object
