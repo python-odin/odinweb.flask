@@ -127,4 +127,4 @@ class ApiBlueprint(ApiInterfaceBase):
         state = self.make_setup_state(app, options, first_registration)
 
         for path, methods, callback in super(ApiBlueprint, self).build_routes():
-            state.add_url_rule(path, path, self._bound_callback(callback), methods=methods)
+            state.add_url_rule(path, callback.__name__, self._bound_callback(callback), methods=methods)

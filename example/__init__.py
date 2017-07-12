@@ -11,6 +11,7 @@ app = Flask(__name__)
 class User(odin.Resource):
     id = odin.IntegerField()
     name = odin.StringField()
+    role = odin.StringField(choices=('a', 'b', 'c'))
 
 
 class UserApi(api.ResourceApi):
@@ -23,6 +24,15 @@ class UserApi(api.ResourceApi):
             User(1, "tim"),
             User(2, "sara"),
         ], 2
+
+    @api.create
+    @doc.body_param(User)
+    @doc.operation(tags=['user'])
+    @doc.response(200, 'Return new user', User)
+    def create_user(self, request):
+        user = self.get_resource(request)
+        user.id = 3
+        return user
 
     @api.detail
     @doc.operation(tags=['user'])
