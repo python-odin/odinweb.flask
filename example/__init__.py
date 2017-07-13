@@ -34,7 +34,7 @@ class UserApi(api.ResourceApi):
 
     @api.detail
     @doc.operation(tags=['user'])
-    @doc.parameter('full', api.In.Query, type_=api.Type.Boolean)
+    @doc.query_param('full', type=api.Type.Boolean)
     @doc.response(200, 'Return requested user.', User)
     def get_user(self, request, resource_id):
         """
