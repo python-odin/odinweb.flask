@@ -23,6 +23,14 @@ class RequestProxy(object):
         self.method = r.method
         self.request = r
 
+    @property
+    def body(self):
+        return self.request.data
+
+    @property
+    def host(self):
+        return self.request.host
+
 
 class ApiBlueprintSetupState(object):
     """Temporary holder object for registering a blueprint with the
@@ -105,14 +113,6 @@ class ApiBlueprint(ApiInterfaceBase):
             return make_response(response.body, response.status, response.headers)
         return callback
 
-    def make_setup_state(self, app, options, first_registration=False):
-        # type: (Flask, dict, bool) -> ApiBlueprintSetupState
-        """Creates an instance of :meth:`~flask.blueprints.BlueprintSetupState`
-        object that is later passed to the register callback functions.
-        Subclasses can override this to return a subclass of the setup state.
-        """
-        return ApiBlueprintSetupState(self, app, options, first_registration)
-
     def register(self, app, options, first_registration):
         # type: (Flask, dict, bool) -> None
         """
@@ -124,7 +124,7 @@ class ApiBlueprint(ApiInterfaceBase):
 
         """
         self._got_registered_once = True
-        state = self.make_setup_state(app, options, first_registration)
+        state = ApiBlueprintSetupState(self, app, options, first_registration)
 
         for path, methods, callback in super(ApiBlueprint, self).build_routes():
             state.add_url_rule(path, callback.__name__, self._bound_callback(callback), methods=methods)
