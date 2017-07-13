@@ -5,8 +5,6 @@ from odinweb import api, doc
 from odinweb.flask import ApiBlueprint
 from odinweb.swagger import SwaggerSpec
 
-app = Flask(__name__)
-
 
 class User(odin.Resource):
     id = odin.IntegerField()
@@ -45,10 +43,11 @@ class UserApi(api.ResourceApi):
         return User(resource_id, "tim")
 
 
+app = Flask(__name__)
 app.register_blueprint(
     ApiBlueprint(
         api.ApiVersion(
-            SwaggerSpec('Flask Example API'),  # Support for Swagger!
+            SwaggerSpec('Flask Example API', enable_ui=True),  # Support for Swagger!
             api.ApiCollection(
                 UserApi(),
             ),
