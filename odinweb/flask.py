@@ -9,7 +9,7 @@ The API integrates into Flask via Flasks blueprint features.
 """
 from __future__ import absolute_import
 
-from flask import Flask, request, make_response
+from flask import Flask, request, session, make_response
 
 from odinweb.api import ApiInterfaceBase
 from odinweb.data_structures import PathNode
@@ -20,6 +20,7 @@ class RequestProxy(object):
         self.GET = r.args
         self.POST = r.form
         self.headers = r.headers
+        self.session = session
         self.method = r.method
         self.request = r
 
@@ -110,7 +111,7 @@ class ApiBlueprint(ApiInterfaceBase):
     def _bound_callback(self, f):
         def callback(**kwargs):
             response = f(RequestProxy(request), **kwargs)
-            return make_response(response.body, response.status, response.headers)
+            return make_response(response.body or ' ', response.status, response.headers)
         return callback
 
     def register(self, app, options, first_registration):
