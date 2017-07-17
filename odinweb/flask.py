@@ -12,7 +12,18 @@ from __future__ import absolute_import
 from flask import Flask, request, session, make_response
 
 from odinweb.api import ApiInterfaceBase
+from odinweb.constants import Type
 from odinweb.data_structures import PathNode
+
+
+TYPE_MAP = {
+    Type.String: 'string',
+    Type.Number: 'number',
+    Type.Integer: 'int',
+    Type.Boolean: 'bool',
+    Type.Array: 'list',
+    Type.File: 'string',
+}
 
 
 class RequestProxy(object):
@@ -101,10 +112,11 @@ class ApiBlueprint(ApiInterfaceBase):
 
     def parse_node(self, node):
         if isinstance(node, PathNode):
+            node_type = TYPE_MAP.get(node.type, 'str')
             if node.type_args:
-                return "<{}({}):{}>".format(node.type, ', '.join(node.type_args), node.name)
+                return "<{}({}):{}>".format(node_type, ', '.join(node.type_args), node.name)
             else:
-                return "<{}:{}>".format(node.type, node.name)
+                return "<{}:{}>".format(node_type, node.name)
         else:
             return str(node)
 
