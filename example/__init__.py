@@ -27,14 +27,14 @@ class UserApi(api.ResourceApi):
             User(2, "sara"),
         ], 2
 
-    @api.create(resource=User)
+    @api.create
     def create_user(self, request, resource):
         user = self.get_resource(request)
         user.id = 3
         return user
 
     @api.detail
-    @doc.query_param('full', type_=api.Type.Boolean)
+    @doc.query_param('full', api.Type.Boolean)
     def get_user(self, request, resource_id):
         """
         Get a user object
