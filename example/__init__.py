@@ -20,12 +20,16 @@ class Group(odin.Resource):
 class UserApi(api.ResourceApi):
     resource = User
 
-    @api.listing
-    def get_user_list(self, request, limit, offset):
-        return [
-            User(1, "tim"),
-            User(2, "sara"),
-        ], 2
+    # @api.Operation.decorate
+    # def operation_test(self, request):
+    #     pass
+
+    # @api.listing
+    # def get_user_list(self, request, limit, offset):
+    #     return [
+    #         User(1, "tim"),
+    #         User(2, "sara"),
+    #     ], 2
 
     @api.create
     def create_user(self, request, resource):
@@ -40,6 +44,14 @@ class UserApi(api.ResourceApi):
         Get a user object
         """
         return User(resource_id, "tim")
+
+    @api.update
+    def update_user(self, request, resource, resource_id):
+        return resource
+
+    @api.delete
+    def delete_user(self, request, resource_id):
+        return self.create_response(200)
 
 
 class GroupApi(api.ResourceApi):
