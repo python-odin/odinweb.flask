@@ -106,23 +106,26 @@ class ApiBlueprint(ApiInterfaceBase):
     """
     _got_registered_once = False
 
-    def __init__(self, *endpoints, **options):
+    def __init__(self, *containers, **options):
         self.subdomain = options.pop('subdomain', None)
-        super(ApiBlueprint, self).__init__(*endpoints, **options)
+        super(ApiBlueprint, self).__init__(*containers, **options)
 
-    def parse_node(self, node):
-        if isinstance(node, PathNode):
-            node_type = TYPE_MAP.get(node.type, 'str')
-            if node.type_args:
-                return "<{}({}):{}>".format(node_type, ', '.join(node.type_args), node.name)
-            else:
-                return "<{}:{}>".format(node_type, node.name)
-        else:
-            return str(node)
+    @staticmethod
+    def node_formatter(path_node):
+        # type: (PathNode) -> str
+        """
+        Format a node to be consumable by the `UrlPath.parse`.
+        """
+        if path_node.type:
+            node_type = TYPE_MAP.get(path_node.type, 'str')
+            if path_node.type_args:
+                return "<{}({}):{}>".format(node_type, ', '.join(path_node.type_args), path_node.name)
+            return "<{}:{}>".format(path_node.name, node_type)
+        return "<{}>".format(path_node.name)
 
-    def _bound_callback(self, f):
-        def callback(**kwargs):
-            response = f(RequestProxy(request), **kwargs)
+    def _bound_callback(self, operation):
+        def callback(**path_args):
+            response = self.dispatch(operation, RequestProxy(request), **path_args)
             return make_response(response.body or ' ', response.status, response.headers)
         return callback
 
@@ -139,5 +142,7 @@ class ApiBlueprint(ApiInterfaceBase):
         self._got_registered_once = True
         state = ApiBlueprintSetupState(self, app, options, first_registration)
 
-        for path, methods, operation in super(ApiBlueprint, self).build_routes():
+        for operation in self.operations():
+            path = operation.url_path.format(self.node_formatter)
+            methods = tuple(m.value for m in operation.methods)
             state.add_url_rule(path, operation.operation_id, self._bound_callback(operation), methods=methods)
