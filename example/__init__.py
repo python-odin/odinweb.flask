@@ -63,7 +63,7 @@ from odinweb.flask import ApiBlueprint
 #         pass
 
 
-@api.Operation.decorate(url_path='/a/b/c')
+@api.Operation.decorate(url_path='a/b/c')
 def sample(request):
     return {}
 

@@ -142,7 +142,7 @@ class ApiBlueprint(ApiInterfaceBase):
         self._got_registered_once = True
         state = ApiBlueprintSetupState(self, app, options, first_registration)
 
-        for operation in self.operations():
-            path = operation.url_path.format(self.node_formatter)
+        for url_path, operation in self.op_paths():
+            path = url_path.format(self.node_formatter)
             methods = tuple(m.value for m in operation.methods)
             state.add_url_rule(path, operation.operation_id, self._bound_callback(operation), methods=methods)
