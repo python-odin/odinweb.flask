@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from flask import Flask, request, session, make_response
 
 from odinweb.api import ApiInterfaceBase
-from odinweb.constants import Type
+from odinweb.constants import Type, Method
 from odinweb.data_structures import PathNode
 
 
@@ -32,8 +32,13 @@ class RequestProxy(object):
         self.POST = r.form
         self.headers = r.headers
         self.session = session
-        self.method = r.method
         self.request = r
+
+        try:
+            method = Method[r.method]
+        except KeyError:
+            method = None
+        self.method = method
 
     @property
     def body(self):
