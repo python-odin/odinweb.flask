@@ -2,19 +2,21 @@ import odin
 
 from flask import Flask
 from odinweb import api, doc
+from odinweb.api import ApiCollection, ApiVersion
 from odinweb.flask import ApiBlueprint
 # from odinweb.swagger import SwaggerSpec
+from odinweb.swagger import SwaggerSpec
 
 
-# class User(odin.Resource):
-#     id = odin.IntegerField()
-#     name = odin.StringField()
-#     role = odin.StringField(choices=('a', 'b', 'c'))
-#
-#
-# class Group(odin.Resource):
-#     id = odin.IntegerField()
-#     name = odin.StringField()
+class User(odin.Resource):
+    id = odin.IntegerField()
+    name = odin.StringField()
+    role = odin.StringField(choices=('a', 'b', 'c'))
+
+
+class Group(odin.Resource):
+    id = odin.IntegerField()
+    name = odin.StringField()
 #
 #
 # class UserApi(api.ResourceApi):
@@ -54,24 +56,28 @@ from odinweb.flask import ApiBlueprint
 #         return self.create_response(200)
 
 
-# class GroupApi(api.ResourceApi):
-#     resource = Group
-#
-#     @api.listing
-#     @doc.operation(tags=['user'])
-#     def list_groups(self):
-#         pass
+class GroupApi(api.ResourceApi):
+    resource = Group
+
+    @api.Operation(tags=['user'])
+    def list_groups(self):
+        return []
+
+sample_api = ApiCollection(name='sample')
 
 
-@api.Operation.decorate(url_path='a/b/c')
+@sample_api.operation(url_path='foo/bar')
 def sample(request):
     return {}
-
 
 app = Flask(__name__)
 app.register_blueprint(
     ApiBlueprint(
-        sample,
+        ApiVersion(
+            SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
+            sample_api,
+            GroupApi(),
+        ),
         debug_enabled=True,
     ),
 )
