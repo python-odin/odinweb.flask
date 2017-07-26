@@ -17,50 +17,50 @@ class User(odin.Resource):
 class Group(odin.Resource):
     id = odin.IntegerField()
     name = odin.StringField()
-#
-#
-# class UserApi(api.ResourceApi):
-#     resource = User
-#
-#     # @api.Operation.decorate
-#     # def operation_test(self, request):
-#     #     pass
-#
-#     # @api.listing
-#     # def get_user_list(self, request, limit, offset):
-#     #     return [
-#     #         User(1, "tim"),
-#     #         User(2, "sara"),
-#     #     ], 2
-#
-#     @api.create
-#     def create_user(self, request, resource):
-#         user = self.get_resource(request)
-#         user.id = 3
-#         return user
-#
-#     @api.detail
-#     @doc.query_param('full', api.Type.Boolean)
-#     def get_user(self, request, resource_id):
-#         """
-#         Get a user object
-#         """
-#         return User(resource_id, "tim")
-#
-#     @api.update
-#     def update_user(self, request, resource, resource_id):
-#         return resource
-#
-#     @api.delete
-#     def delete_user(self, request, resource_id):
-#         return self.create_response(200)
+
+
+class UserApi(api.ResourceApi):
+    resource = User
+
+    @api.route
+    def operation_test(self, request):
+        pass
+
+    @api.listing
+    def get_user_list(self, request, limit, offset):
+        return [
+            User(1, "tim"),
+            User(2, "sara"),
+        ], 2
+
+    # @api.create
+    # def create_user(self, request, resource):
+    #     user = self.get_resource(request)
+    #     user.id = 3
+    #     return user
+    #
+    # @api.detail
+    # @doc.query_param('full', api.Type.Boolean)
+    # def get_user(self, request, resource_id):
+    #     """
+    #     Get a user object
+    #     """
+    #     return User(resource_id, "tim")
+    #
+    # @api.update
+    # def update_user(self, request, resource, resource_id):
+    #     return resource
+    #
+    # @api.delete
+    # def delete_user(self, request, resource_id):
+    #     return self.create_response(200)
 
 
 class GroupApi(api.ResourceApi):
     resource = Group
 
     @api.Operation(tags=['user'])
-    def list_groups(self):
+    def list_groups(self, request):
         return []
 
 sample_api = ApiCollection(name='sample')
