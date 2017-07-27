@@ -77,6 +77,7 @@ app.register_blueprint(
             SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
             sample_api,
             GroupApi(),
+            UserApi(),
         ),
         debug_enabled=True,
     ),
