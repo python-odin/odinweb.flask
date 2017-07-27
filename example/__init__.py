@@ -22,7 +22,7 @@ class Group(odin.Resource):
 class UserApi(api.ResourceApi):
     resource = User
 
-    @api.route(url_path='find', methods=api.Method.POST)
+    @api.collection(url_path='find', methods=api.Method.POST)
     def operation_test(self, request):
         pass
 
