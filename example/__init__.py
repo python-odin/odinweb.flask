@@ -22,6 +22,7 @@ class Group(odin.Resource):
 class UserApi(api.ResourceApi):
     resource = User
 
+    @doc.deprecated
     @api.collection(url_path='find', methods=api.Method.POST)
     def operation_test(self, request):
         pass
@@ -33,27 +34,32 @@ class UserApi(api.ResourceApi):
             User(2, "sara"),
         ], 2
 
-    # @api.create
-    # def create_user(self, request, resource):
-    #     user = self.get_resource(request)
-    #     user.id = 3
-    #     return user
-    #
-    # @api.detail
-    # @doc.query_param('full', api.Type.Boolean)
-    # def get_user(self, request, resource_id):
-    #     """
-    #     Get a user object
-    #     """
-    #     return User(resource_id, "tim")
-    #
-    # @api.update
-    # def update_user(self, request, resource, resource_id):
-    #     return resource
-    #
-    # @api.delete
-    # def delete_user(self, request, resource_id):
-    #     return self.create_response(200)
+    @api.create
+    def create_user(self, request, user):
+        """
+        Create a new user.
+        """
+        user.id = 3
+        return user
+
+    @api.detail
+    def get_user(self, request, resource_id):
+        """
+        Get a user object
+        """
+        return User(resource_id, "tim")
+
+    @api.update
+    def update_user(self, request, user, resource_id):
+        return user
+
+    @api.patch
+    def patch_user(self, request, user, resource_id):
+        return user
+
+    @api.delete
+    def delete_user(self, request, resource_id):
+        return self.create_response(200)
 
 
 class GroupApi(api.ResourceApi):
