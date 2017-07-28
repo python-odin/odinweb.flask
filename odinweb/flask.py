@@ -21,8 +21,8 @@ TYPE_MAP = {
     Type.Number: 'number',
     Type.Integer: 'int',
     Type.Boolean: 'bool',
-    Type.Array: 'list',
-    Type.File: 'string',
+    # Type.Array: 'list',
+    # Type.File: 'string',
 }
 
 
