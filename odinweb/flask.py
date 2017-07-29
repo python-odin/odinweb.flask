@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 from flask import Flask, request, session, make_response
 
-from odinweb.api import ApiInterfaceBase
+from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
 from odinweb.data_structures import PathNode
 
