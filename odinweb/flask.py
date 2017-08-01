@@ -13,7 +13,7 @@ from flask import Flask, request, session, make_response
 
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
-from odinweb.data_structures import PathNode
+from odinweb.data_structures import PathParam
 
 
 TYPE_MAP = {
@@ -117,7 +117,7 @@ class ApiBlueprint(ApiInterfaceBase):
 
     @staticmethod
     def node_formatter(path_node):
-        # type: (PathNode) -> str
+        # type: (PathParam) -> str
         """
         Format a node to be consumable by the `UrlPath.parse`.
         """
