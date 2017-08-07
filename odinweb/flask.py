@@ -27,6 +27,7 @@ TYPE_MAP = {
 
 class RequestProxy(object):
     def __init__(self, r):
+        self.scheme = r.scheme
         self.GET = MultiValueDict(r.args)
         self.POST = MultiValueDict(r.form)
         self.headers = r.headers
