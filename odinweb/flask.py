@@ -13,8 +13,7 @@ from flask import Flask, request, session, make_response
 
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
-from odinweb.data_structures import PathParam
-
+from odinweb.data_structures import PathParam, MultiValueDict
 
 TYPE_MAP = {
     Type.String: 'string',
@@ -28,8 +27,8 @@ TYPE_MAP = {
 
 class RequestProxy(object):
     def __init__(self, r):
-        self.GET = r.args
-        self.POST = r.form
+        self.GET = MultiValueDict(r.args)
+        self.POST = MultiValueDict(r.form)
         self.headers = r.headers
         self.session = session
         self.request = r
