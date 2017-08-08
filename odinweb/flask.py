@@ -28,25 +28,23 @@ TYPE_MAP = {
 class RequestProxy(object):
     def __init__(self, r):
         self.scheme = r.scheme
+        self.host = r.host
+        self.path = r.path
         self.GET = MultiValueDict(r.args)
-        self.POST = MultiValueDict(r.form)
         self.headers = r.headers
+        try:
+            self.method = Method[r.method]
+        except KeyError:
+            self.method = None
+        self.POST = MultiValueDict(r.form)
+
         self.session = session
         self.request = r
-
-        try:
-            method = Method[r.method]
-        except KeyError:
-            method = None
-        self.method = method
 
     @property
     def body(self):
         return self.request.data
 
-    @property
-    def host(self):
-        return self.request.host
 
 
 class ApiBlueprintSetupState(object):
