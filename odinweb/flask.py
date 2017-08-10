@@ -17,7 +17,9 @@ from odinweb.data_structures import PathParam, MultiValueDict
 
 TYPE_MAP = {
     Type.String: 'string',
-    Type.Number: 'number',
+    Type.Password: 'string',
+    Type.Float: 'number',
+    Type.Double: 'number',
     Type.Integer: 'int',
     Type.Boolean: 'bool',
     # Type.Array: 'list',
@@ -44,7 +46,6 @@ class RequestProxy(object):
     @property
     def body(self):
         return self.request.data
-
 
 
 class ApiBlueprintSetupState(object):
