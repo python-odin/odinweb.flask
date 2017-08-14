@@ -10,7 +10,7 @@ class User(odin.Resource):
     """
     User resource
     """
-    id = odin.IntegerField()
+    id = odin.IntegerField(key=True)
     username = odin.StringField()
     name = odin.StringField()
     email = odin.EmailField()
@@ -29,7 +29,7 @@ class UserApi(api.ResourceApi):
     tags = ['user']
 
     @doc.deprecated
-    @api.collection(url_path='find', methods=api.Method.POST)
+    @api.collection(path='find', methods=api.Method.POST)
     def operation_test(self, request):
         pass
 
@@ -49,28 +49,28 @@ class UserApi(api.ResourceApi):
         return user
 
     @api.detail
-    def get_user(self, request, resource_id):
+    def get_user(self, request, id):
         """
         Get a user object
         """
         for user in USERS:
-            if user.id == resource_id:
+            if user.id == id:
                 return user
 
         raise api.HttpError(api.HTTPStatus.NOT_FOUND)
 
     @api.update
-    def update_user(self, request, user, resource_id):
+    def update_user(self, request, user, id):
         return user
 
     @api.patch
-    def patch_user(self, request, user, resource_id):
+    def patch_user(self, request, user, id):
         return user
 
     @api.delete
-    def delete_user(self, request, resource_id):
+    def delete_user(self, request, id):
         for idx, user in enumerate(USERS):
-            if user.id == resource_id:
+            if user.id == id:
                 USERS.remove(user)
                 return
 

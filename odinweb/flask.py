@@ -16,14 +16,18 @@ from odinweb.constants import Type, Method
 from odinweb.data_structures import PathParam, MultiValueDict
 
 TYPE_MAP = {
-    Type.String: 'string',
-    Type.Password: 'string',
+    Type.Integer: 'int',
+    Type.Long: 'int',
     Type.Float: 'number',
     Type.Double: 'number',
-    Type.Integer: 'int',
+    Type.String: 'string',
+    Type.Byte: '',
+    Type.Binary: '',
     Type.Boolean: 'bool',
-    # Type.Array: 'list',
-    # Type.File: 'string',
+    Type.Date: 'string',
+    Type.Time: 'string',
+    Type.DateTime: 'string',
+    Type.Password: 'string',
 }
 
 
@@ -48,47 +52,6 @@ class RequestProxy(object):
         return self.request.data
 
 
-class ApiBlueprintSetupState(object):
-    """Temporary holder object for registering a blueprint with the
-    application.  An instance of this class is created by the
-    :meth:`~flask.Blueprint.make_setup_state` method and later passed
-    to all register callback functions.
-    """
-
-    def __init__(self, blueprint, app, options, first_registration):
-        #: a reference to the current application
-        self.app = app
-
-        #: a reference to the blueprint that created this setup state.
-        self.blueprint = blueprint
-
-        #: a dictionary with all options that were passed to the
-        #: :meth:`~flask.Flask.register_blueprint` method.
-        self.options = options
-
-        #: as blueprints can be registered multiple times with the
-        #: application and not everything wants to be registered
-        #: multiple times on it, this attribute can be used to figure
-        #: out if the blueprint was registered in the past already.
-        self.first_registration = first_registration
-
-        subdomain = self.options.get('subdomain')
-        if subdomain is None:
-            subdomain = self.blueprint.subdomain
-
-        #: The subdomain that the blueprint should be active for, ``None``
-        #: otherwise.
-        self.subdomain = subdomain
-
-    def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
-        """A helper method to register a rule (and optionally a view function)
-        to the application.  The endpoint is automatically prefixed with the
-        blueprint's name.
-        """
-        options.setdefault('subdomain', self.subdomain)
-        self.app.add_url_rule(rule, '%s.%s' % (self.blueprint.name, endpoint), view_func, **options)
-
-
 class ApiBlueprint(ApiInterfaceBase):
     """
     A Flask Blueprint for an API::
@@ -108,8 +71,6 @@ class ApiBlueprint(ApiInterfaceBase):
         )
 
     """
-    _got_registered_once = False
-
     def __init__(self, *containers, **options):
         self.subdomain = options.pop('subdomain', None)
         super(ApiBlueprint, self).__init__(*containers, **options)
@@ -143,10 +104,12 @@ class ApiBlueprint(ApiInterfaceBase):
         :param first_registration: First registration of blueprint
 
         """
-        self._got_registered_once = True
-        state = ApiBlueprintSetupState(self, app, options, first_registration)
-
         for url_path, operation in self.op_paths():
-            path = url_path.format(self.node_formatter)
-            methods = tuple(m.value for m in operation.methods)
-            state.add_url_rule(path, operation.operation_id, self._bound_callback(operation), methods=methods)
+            app.add_url_rule(
+                url_path.format(self.node_formatter),
+                '%s.%s' % (self.name, operation.operation_id),
+                self._bound_callback(operation),
+                methods=tuple(m.value for m in operation.methods),
+
+                **options
+            )
