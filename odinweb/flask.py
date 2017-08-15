@@ -83,8 +83,6 @@ class ApiBlueprint(ApiInterfaceBase):
         """
         if path_node.type:
             node_type = TYPE_MAP.get(path_node.type, 'str')
-            if path_node.type_args:
-                return "<{}({}):{}>".format(node_type, ', '.join(path_node.type_args), path_node.name)
             return "<{}:{}>".format(node_type, path_node.name)
         return "<{}>".format(path_node.name)
 
