@@ -9,11 +9,16 @@ The API integrates into Flask via Flasks blueprint features.
 """
 from __future__ import absolute_import
 
-from flask import Flask, request, session, make_response
+from flask import request, session, make_response
+
+# Type imports
+from flask import Flask  # noqa
+from odinweb.data_structures import PathParam  # noqa
 
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
-from odinweb.data_structures import PathParam, MultiValueDict
+from odinweb.data_structures import MultiValueDict
+
 
 TYPE_MAP = {
     Type.Integer: 'int',
