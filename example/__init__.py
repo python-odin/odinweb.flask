@@ -1,7 +1,10 @@
+from odin.utils import getmeta, field_iter_items, field_iter
+
 import odin
 
 from flask import Flask
 from odinweb import api, doc
+from odinweb.data_structures import HttpResponse
 from odinweb.flask import ApiBlueprint
 from odinweb.swagger import SwaggerSpec
 
@@ -36,6 +39,19 @@ class UserApi(api.ResourceApi):
     @api.listing
     def get_user_list(self, request, offset, limit):
         return USERS[offset:offset+limit], len(USERS)
+
+    @api.action(path='stream')
+    def get_user_stream(self, request):
+        """
+        Streamed user response.
+        """
+        def generate():
+            yield '\t'.join(f.name for f in field_iter(User)) + '\n'
+
+            for user in USERS:
+                yield '\t'.join(str(v) for _, v in field_iter_items(user)) + '\n'
+
+        return HttpResponse(generate(), headers={'Content-Type': 'text/plain'})
 
     @api.create
     def create_user(self, request, user):
@@ -80,7 +96,7 @@ class UserApi(api.ResourceApi):
 sample_api = api.ApiCollection(name='sample')
 
 
-@sample_api.operation(url_path='foo/bar')
+@sample_api.operation(path='foo/bar')
 def sample(request):
     return {}
 
