@@ -9,7 +9,7 @@ The API integrates into Flask via Flasks blueprint features.
 """
 from __future__ import absolute_import
 
-from flask import request, session, make_response
+from flask import request, session, Response
 
 # Type imports
 from flask import Flask  # noqa
@@ -94,7 +94,7 @@ class ApiBlueprint(ApiInterfaceBase):
     def _bound_callback(self, operation):
         def callback(**path_args):
             response = self.dispatch(operation, RequestProxy(request), **path_args)
-            return make_response(response.body or ' ', response.status, response.headers)
+            return Response(response.body or ' ', response.status, response.headers)
         return callback
 
     def register(self, app, options, first_registration):
