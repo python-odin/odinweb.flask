@@ -11,13 +11,13 @@ from __future__ import absolute_import
 
 from flask import request, session, Response
 
-# Type imports
-from flask import Flask  # noqa
-from odinweb.data_structures import PathParam  # noqa
-
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
 from odinweb.data_structures import MultiValueDict
+
+# Type imports
+from flask import Flask  # noqa
+from odinweb.data_structures import PathParam  # noqa
 
 
 TYPE_MAP = {
@@ -77,7 +77,15 @@ class ApiBlueprint(ApiInterfaceBase):
 
     """
     def __init__(self, *containers, **options):
+        """
+        Additional options::
+
+        handle_options
+            Register add options to the methods.
+
+        """
         self.subdomain = options.pop('subdomain', None)
+        self.handle_options = options.pop('handle_options', True)
         super(ApiBlueprint, self).__init__(*containers, **options)
 
     @staticmethod
@@ -108,11 +116,15 @@ class ApiBlueprint(ApiInterfaceBase):
 
         """
         for url_path, operation in self.op_paths():
+            # Determine methods
+            methods = {m.value for m in operation.methods}
+            if self.handle_options:
+                methods.add(Method.OPTIONS.value)
+
             app.add_url_rule(
                 url_path.format(self.node_formatter),
                 '%s.%s' % (self.name, operation.operation_id),
                 self._bound_callback(operation),
-                methods=tuple(m.value for m in operation.methods),
-
+                methods=tuple(methods),
                 **options
             )

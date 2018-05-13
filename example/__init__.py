@@ -6,6 +6,7 @@ from odin.utils import getmeta, field_iter_items, field_iter
 from odinweb import api, doc
 from odinweb.data_structures import HttpResponse
 from odinweb.flask import ApiBlueprint
+from odinweb.middleware.cors import CORS
 from odinweb.swagger import SwaggerSpec
 
 
@@ -117,6 +118,13 @@ app.register_blueprint(
             sample_api,
             UserApi(),
         ),
+        middleware=[
+            CORS('http://localhost:5000', max_age=10)
+        ],
         debug_enabled=True,
     ),
 )
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
