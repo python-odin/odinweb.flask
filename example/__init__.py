@@ -16,6 +16,14 @@ class User(odin.Resource):
     email = odin.EmailField()
     role = odin.StringField(choices=('a', 'b', 'c'))
 
+
+class UserSummary(odin.ResourceProxy):
+    class Meta:
+        resource = User
+        include = ('id', 'username', 'name')
+        readonly = ('id', 'username')
+
+
 USERS = [
     User(1, 'pimpstar24', 'Bender', 'Rodreges', 'bender@ilovebender.com'),
     User(2, 'zoidberg', 'Zoidberg', '', 'zoidberg@freemail.web'),
@@ -33,11 +41,11 @@ class UserApi(api.ResourceApi):
     def operation_test(self, request):
         pass
 
-    @api.listing
+    @api.listing(resource=UserSummary)
     def get_user_list(self, request, offset, limit):
-        return USERS[offset:offset+limit], len(USERS)
+        return UserSummary.proxy(USERS[offset:offset+limit]), len(USERS)
 
-    @api.create
+    @api.create(resource=UserSummary)
     def create_user(self, request, user):
         global USER_ID
 
@@ -80,7 +88,7 @@ class UserApi(api.ResourceApi):
 sample_api = api.ApiCollection(name='sample')
 
 
-@sample_api.operation(url_path='foo/bar')
+@sample_api.operation('foo/bar')
 def sample(request):
     return {}
 
