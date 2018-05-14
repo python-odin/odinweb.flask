@@ -103,6 +103,7 @@ class ApiBlueprint(ApiInterfaceBase):
         def callback(**path_args):
             response = self.dispatch(operation, RequestProxy(request), **path_args)
             return Response(response.body or ' ', response.status, response.headers)
+        callback.provide_automatic_options = False
         return callback
 
     def register(self, app, options, first_registration):
@@ -118,9 +119,6 @@ class ApiBlueprint(ApiInterfaceBase):
         for url_path, operation in self.op_paths():
             # Determine methods
             methods = {m.value for m in operation.methods}
-            if self.handle_options:
-                methods.add(Method.OPTIONS.value)
-
             app.add_url_rule(
                 url_path.format(self.node_formatter),
                 '%s.%s' % (self.name, operation.operation_id),
