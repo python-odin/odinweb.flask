@@ -11,13 +11,13 @@ from __future__ import absolute_import
 
 from flask import request, session, Response
 
-# Type imports
-from flask import Flask  # noqa
-from odinweb.data_structures import PathParam  # noqa
-
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
 from odinweb.data_structures import MultiValueDict
+
+# Type imports
+from flask import Flask  # noqa
+from odinweb.data_structures import PathParam  # noqa
 
 
 TYPE_MAP = {
@@ -95,6 +95,7 @@ class ApiBlueprint(ApiInterfaceBase):
         def callback(**path_args):
             response = self.dispatch(operation, RequestProxy(request), **path_args)
             return Response(response.body or ' ', response.status, response.headers)
+        callback.provide_automatic_options = False
         return callback
 
     def register(self, app, options, first_registration):
@@ -112,7 +113,6 @@ class ApiBlueprint(ApiInterfaceBase):
                 url_path.format(self.node_formatter),
                 '%s.%s' % (self.name, operation.operation_id),
                 self._bound_callback(operation),
-                methods=tuple(m.value for m in operation.methods),
-
+                methods=(m.value for m in operation.methods),
                 **options
             )

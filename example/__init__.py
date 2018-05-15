@@ -1,11 +1,12 @@
-from odin.utils import getmeta, field_iter_items, field_iter
-
 import odin
 
 from flask import Flask
+from odin.utils import getmeta, field_iter_items, field_iter
+
 from odinweb import api, doc
 from odinweb.data_structures import HttpResponse
 from odinweb.flask import ApiBlueprint
+from odinweb.cors import CORS
 from odinweb.swagger import SwaggerSpec
 
 
@@ -18,6 +19,14 @@ class User(odin.Resource):
     name = odin.StringField()
     email = odin.EmailField()
     role = odin.StringField(choices=('a', 'b', 'c'))
+
+
+class UserSummary(odin.ResourceProxy):
+    class Meta:
+        resource = User
+        include = ('id', 'username', 'name')
+        readonly = ('id', 'username')
+
 
 USERS = [
     User(1, 'pimpstar24', 'Bender', 'Rodreges', 'bender@ilovebender.com'),
@@ -36,9 +45,9 @@ class UserApi(api.ResourceApi):
     def operation_test(self, request):
         pass
 
-    @api.listing
+    @api.listing(resource=UserSummary)
     def get_user_list(self, request, offset, limit):
-        return USERS[offset:offset+limit], len(USERS)
+        return UserSummary.proxy(USERS[offset:offset+limit]), len(USERS)
 
     @api.action(path='stream')
     def get_user_stream(self, request):
@@ -53,7 +62,7 @@ class UserApi(api.ResourceApi):
 
         return HttpResponse(generate(), headers={'Content-Type': 'text/plain'})
 
-    @api.create
+    @api.create(resource=UserSummary)
     def create_user(self, request, user):
         global USER_ID
 
@@ -103,12 +112,21 @@ def sample(request):
 
 app = Flask(__name__)
 app.register_blueprint(
-    ApiBlueprint(
-        api.ApiVersion(
-            SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
-            sample_api,
-            UserApi(),
+    CORS(
+        ApiBlueprint(
+            api.ApiVersion(
+                SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
+                sample_api,
+                UserApi(),
+            ),
+            middleware=[],
+            debug_enabled=True,
         ),
-        debug_enabled=True,
-    ),
+        origins=['http://localhost:5000'],
+        max_age=10,
+    )
 )
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
