@@ -1,2 +1,2 @@
-odinweb >=0.4
+odinweb >=0.4.7
 flask
