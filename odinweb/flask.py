@@ -11,12 +11,13 @@ from __future__ import absolute_import
 
 from flask import request, session, Response
 
+from odin.utils import lazy_property
 from odinweb.containers import ApiInterfaceBase
 from odinweb.constants import Type, Method
-from odinweb.data_structures import MultiValueDict
+from odinweb.data_structures import MultiValueDict, BaseHttpRequest
 
 # Type imports
-from flask import Flask  # noqa
+from flask import Flask, Request  # noqa
 from odinweb.data_structures import PathParam  # noqa
 
 
@@ -36,25 +37,57 @@ TYPE_MAP = {
 }
 
 
-class RequestProxy(object):
+class RequestProxy(BaseHttpRequest):
     def __init__(self, r):
-        self.scheme = r.scheme
-        self.host = r.host
-        self.path = r.path
-        self.GET = MultiValueDict(r.args)
-        self.headers = r.headers
-        try:
-            self.method = Method[r.method]
-        except KeyError:
-            self.method = None
-        self.POST = MultiValueDict(r.form)
-
-        self.session = session
+        # type: (Request) -> None
         self.request = r
 
-    @property
+    @lazy_property
+    def environ(self):
+        return self.request.environ
+
+    @lazy_property
+    def method(self):
+        try:
+            return Method(self.request.method)
+        except KeyError:
+            pass
+
+    @lazy_property
+    def scheme(self):
+        return self.request.scheme
+
+    @lazy_property
+    def host(self):
+        return self.request.host
+
+    @lazy_property
+    def path(self):
+        return self.request.path
+
+    @lazy_property
+    def query(self):
+        return MultiValueDict(self.request.args)
+
+    @lazy_property
+    def headers(self):
+        return self.request.headers
+
+    @lazy_property
+    def cookies(self):
+        return self.request.cookies
+
+    @lazy_property
+    def session(self):
+        return session
+
+    @lazy_property
     def body(self):
         return self.request.data
+
+    @lazy_property
+    def form(self):
+        return MultiValueDict(self.request.form)
 
 
 class ApiBlueprint(ApiInterfaceBase):
