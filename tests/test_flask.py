@@ -5,7 +5,6 @@ from flask import Flask, request
 from odinweb import flask
 from odinweb.constants import Method, Type
 from odinweb.data_structures import PathParam
-from odinweb.testing import check_request_proxy
 
 
 def test_request_proxy():
@@ -16,11 +15,15 @@ def test_request_proxy():
     @test_app.route('/')
     def test_method():
         target = flask.RequestProxy(request)
-        check_request_proxy(target)
-        assert target.method == Method.GET
+        assert target.method == Method.POST
+        assert set(target.query.getlist('a')) == {'1', '3'}
+        assert set(target.query.getlist('b')) == {'2'}
+        assert target.body == "123"
+        assert target.content_type == 'text/html'
+        assert target.origin == "http://localhost"
         return 'OK'
 
-    rv = app.get('/?a=1&b=2&a=3')
+    app.post('/?a=1&b=2&a=3', content_type='text/html', data="123", headers={"Origin": 'http://localhost'})
 
 
 class TestApiBlueprint(object):
