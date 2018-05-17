@@ -6,7 +6,7 @@ from odin.utils import getmeta, field_iter_items, field_iter
 from odinweb import api, doc
 from odinweb.data_structures import HttpResponse
 from odinweb.flask import ApiBlueprint
-from odinweb.middleware.cors import CORS
+from odinweb.cors import CORS
 from odinweb.swagger import SwaggerSpec
 
 
@@ -112,17 +112,19 @@ def sample(request):
 
 app = Flask(__name__)
 app.register_blueprint(
-    ApiBlueprint(
-        api.ApiVersion(
-            SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
-            sample_api,
-            UserApi(),
+    CORS(
+        ApiBlueprint(
+            api.ApiVersion(
+                SwaggerSpec("Flask Example Swaggerspec", enable_ui=True),
+                sample_api,
+                UserApi(),
+            ),
+            middleware=[],
+            debug_enabled=True,
         ),
-        middleware=[
-            CORS('http://localhost:5000', max_age=10)
-        ],
-        debug_enabled=True,
-    ),
+        origins=['http://localhost:5000'],
+        max_age=10,
+    )
 )
 
 
