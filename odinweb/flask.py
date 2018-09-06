@@ -89,6 +89,10 @@ class RequestProxy(BaseHttpRequest):
     def form(self):
         return MultiValueDict(self.request.form)
 
+    @lazy_property
+    def content_type(self):
+        return self.request.content_type
+
 
 class ApiBlueprint(ApiInterfaceBase):
     """
