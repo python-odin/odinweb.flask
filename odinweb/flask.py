@@ -114,15 +114,7 @@ class ApiBlueprint(ApiInterfaceBase):
 
     """
     def __init__(self, *containers, **options):
-        """
-        Additional options::
-
-        handle_options
-            Register add options to the methods.
-
-        """
         self.subdomain = options.pop('subdomain', None)
-        self.handle_options = options.pop('handle_options', True)
         super(ApiBlueprint, self).__init__(*containers, **options)
 
     @staticmethod
@@ -154,12 +146,10 @@ class ApiBlueprint(ApiInterfaceBase):
 
         """
         for url_path, operation in self.op_paths():
-            # Determine methods
-            methods = {m.value for m in operation.methods}
             app.add_url_rule(
                 url_path.format(self.node_formatter),
                 '%s.%s' % (self.name, operation.operation_id),
                 self._bound_callback(operation),
-                methods=tuple(methods),
+                methods=(m.value for m in operation.methods),
                 **options
             )
