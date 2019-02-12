@@ -131,7 +131,7 @@ class ApiBlueprint(ApiInterfaceBase):
     def _bound_callback(self, operation):
         def callback(**path_args):
             response = self.dispatch(operation, RequestProxy(request), **path_args)
-            return Response(response.body or ' ', response.status, response.headers)
+            return Response(response.body, response.status, response.headers)
         callback.provide_automatic_options = False
         return callback
 
